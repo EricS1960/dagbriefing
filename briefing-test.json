@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-09-30T08:48:00+02:00",
-  "deployment": "TEST",
+  "generated_at": "2026-09-30T08:50:00+02:00",
+  "deployment": "JSON-UPDATE-GESLAAGD",
   "cards": [
     {
       "n": 1,
       "category": "Nieuws Headlines",
-      "headline": "JSON-test kaart 1"
+      "headline": "JSON-only update werkt"
     },
     {
       "n": 2,
