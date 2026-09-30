@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#05070a">
+<title>Dagbriefing JSON upload</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;background:#05070a;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}body{overflow-x:hidden}.shell{width:min(100%,480px);margin:auto;padding:12px 12px 24px}.top{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:end;margin:2px 2px 10px}.top h1{font-size:20px;line-height:1.08;margin:0}.date{color:#19a8ff;font-weight:850;font-size:11px;line-height:1.3;text-align:right;white-space:nowrap}.loader{border:1px solid #26303c;background:#0b0e13;border-radius:18px;padding:14px;margin:0 0 12px}.loader strong{display:block;font-size:15px;margin-bottom:6px}.loader p{margin:0 0 10px;color:#b8c2cd;font-size:13px;line-height:1.35}.pick{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.filebtn{display:inline-flex;align-items:center;gap:7px;background:#0b1721;border:1px solid #24445d;color:#8ed1ff;border-radius:999px;padding:9px 12px;font-size:13px;font-weight:850;cursor:pointer}.filebtn input{display:none}.status{font-size:12px;color:#8e9baa}.status.ok{color:#7fe2ad}.status.err{color:#ff9a9a}.track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;scrollbar-width:none;-webkit-overflow-scrolling:touch}.track::-webkit-scrollbar{display:none}.card{flex:0 0 100%;height:min(720px,calc(100dvh - 210px));min-height:610px;background:#0b0e13;border:1px solid #1d2530;border-radius:22px;overflow:hidden;scroll-snap-align:center;display:flex;flex-direction:column}.hero{height:39%;min-height:220px;position:relative;overflow:hidden;background:#0b1520;flex:0 0 auto}.hero:after{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(transparent 55%,rgba(5,7,10,.92))}.art{position:absolute;inset:0}.art img{width:100%;height:100%;display:block;object-fit:cover;object-position:center;background:#0b1520}.badge{position:absolute;z-index:2;top:13px;left:13px;background:rgba(5,7,10,.94);padding:8px 11px;border-radius:8px;font-size:11px;font-weight:900;letter-spacing:.055em}.content{flex:1;min-height:0;padding:12px 17px 14px;display:flex;flex-direction:column;overflow:hidden}.content h2{font-size:clamp(24px,6.6vw,30px);line-height:1.04;margin:0 0 9px;font-weight:900;letter-spacing:-.03em}.content p{font-size:15.5px;line-height:1.36;color:#e7edf4;margin:0}.content p strong{color:#66c1ff}.facts{margin-top:auto;border-top:1px solid #26303c;padding-top:9px;display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px;color:#b8c2cd}.facts b{color:#19a8ff;display:block;font-size:13px}.card-source{display:inline-flex;align-items:center;align-self:flex-start;margin-top:9px;color:#8ed1ff;text-decoration:none;font-size:12px;font-weight:800;border:1px solid #24445d;background:#0b1721;padding:7px 10px;border-radius:999px}.nav{display:flex;align-items:center;justify-content:center;gap:12px;padding-top:9px}.nav button{border:1px solid #344050;background:#11161d;color:#fff;border-radius:999px;padding:7px 13px;font-weight:750}.dots{display:flex;gap:5px}.dot{width:6px;height:6px;border-radius:50%;background:#46515e}.dot.on{width:18px;border-radius:8px;background:#19a8ff}.hint{text-align:center;color:#8e9baa;font-size:11px;margin-top:5px}.empty{border:1px dashed #344050;border-radius:22px;padding:36px 20px;text-align:center;color:#8e9baa}.drop{outline:2px solid #19a8ff;outline-offset:2px}@media(max-width:420px){.shell{padding-left:9px;padding-right:9px}.top{grid-template-columns:1fr}.date{text-align:left;white-space:normal}.card{height:min(710px,calc(100dvh - 228px));min-height:600px}.hero{height:37%;min-height:210px}.content{padding:12px 15px 13px}.content h2{font-size:26px}}
+</style>
+</head>
+<body>
+<main class="shell" id="shell">
+<header class="top">
+  <h1>Dagbriefing · JSON upload</h1>
+  <div class="date"><div id="contentTime">KIES EEN JSON-BESTAND</div><div id="deployTime"></div></div>
+</header>
+
+<section class="loader" id="loader">
+  <strong>Briefingbestand laden</strong>
+  <p>Kies of sleep een geldig <code>briefing.json</code>-bestand hierheen. Het bestand wordt alleen lokaal in deze browser gelezen en direct in de Dagbriefing-template gezet.</p>
+  <div class="pick">
+    <label class="filebtn">JSON kiezen <input id="fileInput" type="file" accept=".json,application/json"></label>
+    <span class="status" id="status">Nog geen bestand geladen</span>
+  </div>
+</section>
+
+<section class="track" id="track"><div class="empty">Upload een JSON-bestand om de 10 kaarten te tonen.</div></section>
+<div class="nav"><button id="prev">‹</button><div class="dots" id="dots"></div><button id="next">›</button></div>
+<div class="hint">Swipe →</div>
+</main>
+
+<script>
+const track=document.getElementById('track'),dots=document.getElementById('dots'),statusEl=document.getElementById('status'),loader=document.getElementById('loader'),fileInput=document.getElementById('fileInput');
+let cards=[];
+
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const safeUrl=u=>{try{const x=new URL(String(u));return /^https?:$/.test(x.protocol)?x.href:''}catch{return''}};
+function safeSummary(html){
+  const doc=new DOMParser().parseFromString('<div>'+String(html||'')+'</div>','text/html');
+  const root=doc.body.firstChild;
+  const walk=n=>{
+    [...n.childNodes].forEach(ch=>{
+      if(ch.nodeType===1){
+        const tag=ch.tagName.toLowerCase();
+        if(!['strong','em'].includes(tag)){ch.replaceWith(document.createTextNode(ch.textContent||''));}
+        else{[...ch.attributes].forEach(a=>ch.removeAttribute(a.name));walk(ch);}
+      }
+    });
+  };
+  walk(root);return root.innerHTML;
+}
+function validate(b){
+  if(!b||b.schema_version!==1)throw Error('schema_version moet 1 zijn');
+  if(!Array.isArray(b.cards)||b.cards.length!==10)throw Error('JSON moet exact 10 kaarten bevatten');
+  const cats=['NIEUWS HEADLINES','SPORT HEADLINES','FILM & FESTIVALS','TECHNOLOGIE & GADGETS','AI HEADLINES','WATERSPORT','GWW','ROTTERDAM HEADLINES','MUZIEK & CONCERTEN','WEER ROTTERDAM'];
+  b.cards.forEach((c,i)=>{
+    if(c.n!==i+1)throw Error('Kaartnummering moet 1 t/m 10 zijn');
+    if(String(c.category||'').toUpperCase()!==cats[i])throw Error('Categorie '+(i+1)+' klopt niet');
+    if(!c.headline||!c.summary_html)throw Error('Headline of samenvatting ontbreekt bij kaart '+(i+1));
+    if(!Array.isArray(c.facts)||c.facts.length!==2||c.facts.some(f=>!f.value||!f.label))throw Error('Kaart '+(i+1)+' moet exact twee feiten hebben');
+    if(!c.source?.url||!c.source?.label||!safeUrl(c.source.url))throw Error('Bron ontbreekt of is ongeldig bij kaart '+(i+1));
+    if(!c.image?.src||!c.image?.alt||!safeUrl(c.image.src))throw Error('Afbeelding ontbreekt of is ongeldig bij kaart '+(i+1));
+  });
+  return b;
+}
+function buildNav(){
+  dots.innerHTML='';cards=[...track.querySelectorAll('.card')];
+  cards.forEach((_,i)=>{const x=document.createElement('span');x.className='dot'+(i?'':' on');dots.appendChild(x)});
+}
+function idx(){return Math.max(0,Math.min(cards.length-1,Math.round(track.scrollLeft/(track.clientWidth+12))))}
+function syncDots(){[...dots.children].forEach((x,i)=>x.classList.toggle('on',i===idx()))}
+function go(n){if(cards.length)cards[Math.max(0,Math.min(cards.length-1,n))].scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'})}
+document.getElementById('prev').onclick=()=>go(idx()-1);
+document.getElementById('next').onclick=()=>go(idx()+1);
+track.addEventListener('scroll',()=>requestAnimationFrame(syncDots));
+
+function render(b,filename){
+  document.title=b.title||'Dagbriefing JSON upload';
+  document.getElementById('contentTime').textContent=b.content_time||'';
+  document.getElementById('deployTime').textContent=b.deployment_time||'';
+  track.innerHTML=b.cards.map(c=>{
+    const img=safeUrl(c.image.src),src=safeUrl(c.source.url);
+    return '<article class="card"><div class="hero"><div class="art"><img src="'+esc(img)+'" alt="'+esc(c.image.alt)+'"></div><div class="badge">'+c.n+'/10 · '+esc(c.category)+'</div></div><div class="content"><h2>'+esc(c.headline)+'</h2><p>'+safeSummary(c.summary_html)+'</p><div class="facts"><span><b>'+esc(c.facts[0].value)+'</b>'+esc(c.facts[0].label)+'</span><span><b>'+esc(c.facts[1].value)+'</b>'+esc(c.facts[1].label)+'</span></div><a class="card-source" href="'+esc(src)+'" target="_blank" rel="noopener">'+esc(c.source.label)+'</a></div></article>';
+  }).join('');
+  buildNav();
+  statusEl.className='status ok';statusEl.textContent='Geladen: '+filename+' · 10 kaarten';
+}
+async function loadFile(file){
+  try{
+    if(!file) return;
+    const text=await file.text();
+    const b=validate(JSON.parse(text));
+    render(b,file.name);
+  }catch(e){
+    statusEl.className='status err';statusEl.textContent='Fout: '+e.message;
+  }
+}
+fileInput.addEventListener('change',e=>loadFile(e.target.files[0]));
+['dragenter','dragover'].forEach(ev=>loader.addEventListener(ev,e=>{e.preventDefault();loader.classList.add('drop')}));
+['dragleave','drop'].forEach(ev=>loader.addEventListener(ev,e=>{e.preventDefault();loader.classList.remove('drop')}));
+loader.addEventListener('drop',e=>loadFile(e.dataTransfer.files[0]));
+</script>
+</body>
+</html>
