@@ -1,0 +1,56 @@
+{
+  "generated_at": "2026-09-30T08:48:00+02:00",
+  "deployment": "TEST",
+  "cards": [
+    {
+      "n": 1,
+      "category": "Nieuws Headlines",
+      "headline": "JSON-test kaart 1"
+    },
+    {
+      "n": 2,
+      "category": "Sport Headlines",
+      "headline": "JSON-test kaart 2"
+    },
+    {
+      "n": 3,
+      "category": "Film & Festivals",
+      "headline": "JSON-test kaart 3"
+    },
+    {
+      "n": 4,
+      "category": "Technologie & Gadgets",
+      "headline": "JSON-test kaart 4"
+    },
+    {
+      "n": 5,
+      "category": "AI Headlines",
+      "headline": "JSON-test kaart 5"
+    },
+    {
+      "n": 6,
+      "category": "Watersport",
+      "headline": "JSON-test kaart 6"
+    },
+    {
+      "n": 7,
+      "category": "GWW",
+      "headline": "JSON-test kaart 7"
+    },
+    {
+      "n": 8,
+      "category": "Rotterdam Headlines",
+      "headline": "JSON-test kaart 8"
+    },
+    {
+      "n": 9,
+      "category": "Muziek & Concerten",
+      "headline": "JSON-test kaart 9"
+    },
+    {
+      "n": 10,
+      "category": "Weer Rotterdam",
+      "headline": "JSON-test kaart 10"
+    }
+  ]
+}
