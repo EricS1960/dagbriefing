@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "title": "Dagbriefing 30 september 2026",
-  "content_time": "29 SEP 2026 · INHOUD GECONTROLEERD 23:36",
-  "deployment_time": "DEPLOYMENT 30 SEP 2026 · 00:00",
+  "content_time": "30 SEP 2026 · TEST DEPLOYMENT",
+  "deployment_time": "DEPLOYMENT TEST · 30 SEP 2026",
   "cards": [
     {
       "n": 1,
       "category": "NIEUWS HEADLINES",
-      "headline": "Jonge hacker nu ook verdacht van moordopdrachten",
+      "headline": "TEST DEPLOYMENT GESLAAGD — Jonge hacker nu ook verdacht van moordopdrachten",
       "summary_html": "De zaak rond de 24-jarige Amsterdammer die wordt gelinkt aan hackerscollectief <strong>ShinyHunters</strong> is verder geëscaleerd. Naast verdenkingen rond grootschalige cybercriminaliteit verdenkt justitie hem van het uitlokken van twee moorden in het buitenland. Zijn voorarrest is verlengd terwijl het onderzoek doorgaat.",
       "facts": [
         {
